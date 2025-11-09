@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
-import { supabase, DRNStatus } from '../lib/supabase';
+import { DRNStatus, drnStorage } from '../lib/storage';
 
 export function DRNStatusTable() {
   const [items, setItems] = useState<DRNStatus[]>([]);

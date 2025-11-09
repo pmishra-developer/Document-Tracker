@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
-import { supabase, UCMStatus } from '../lib/supabase';
+import { UCMStatus, ucmStorage } from '../lib/storage';
 
 export function UCMStatusTable() {
   const [items, setItems] = useState<UCMStatus[]>([]);
