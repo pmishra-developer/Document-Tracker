@@ -13,18 +13,10 @@ export function DRNStatusTable() {
     fetchItems();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchItems = () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('drn_status')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching DRN items:', error);
-    } else {
-      setItems(data || []);
-    }
+    const data = drnStorage.getAll();
+    setItems(data);
     setLoading(false);
   };
 
@@ -46,22 +38,11 @@ export function DRNStatusTable() {
     setFormData(item);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (isAdding) {
-      const { error } = await supabase.from('drn_status').insert([formData]);
-      if (error) {
-        console.error('Error adding item:', error);
-        return;
-      }
+      drnStorage.add(formData);
     } else if (editingId) {
-      const { error } = await supabase
-        .from('drn_status')
-        .update({ ...formData, updated_at: new Date().toISOString() })
-        .eq('id', editingId);
-      if (error) {
-        console.error('Error updating item:', error);
-        return;
-      }
+      drnStorage.update(editingId, formData);
     }
 
     setIsAdding(false);
@@ -76,14 +57,10 @@ export function DRNStatusTable() {
     setFormData({});
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
-    const { error } = await supabase.from('drn_status').delete().eq('id', id);
-    if (error) {
-      console.error('Error deleting item:', error);
-      return;
-    }
+    drnStorage.delete(id);
     fetchItems();
   };
 

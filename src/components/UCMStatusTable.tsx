@@ -13,18 +13,10 @@ export function UCMStatusTable() {
     fetchItems();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchItems = () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('ucm_status')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching UCM items:', error);
-    } else {
-      setItems(data || []);
-    }
+    const data = ucmStorage.getAll();
+    setItems(data);
     setLoading(false);
   };
 
@@ -49,22 +41,11 @@ export function UCMStatusTable() {
     setFormData(item);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (isAdding) {
-      const { error } = await supabase.from('ucm_status').insert([formData]);
-      if (error) {
-        console.error('Error adding item:', error);
-        return;
-      }
+      ucmStorage.add(formData);
     } else if (editingId) {
-      const { error } = await supabase
-        .from('ucm_status')
-        .update({ ...formData, updated_at: new Date().toISOString() })
-        .eq('id', editingId);
-      if (error) {
-        console.error('Error updating item:', error);
-        return;
-      }
+      ucmStorage.update(editingId, formData);
     }
 
     setIsAdding(false);
@@ -79,14 +60,10 @@ export function UCMStatusTable() {
     setFormData({});
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
-    const { error } = await supabase.from('ucm_status').delete().eq('id', id);
-    if (error) {
-      console.error('Error deleting item:', error);
-      return;
-    }
+    ucmStorage.delete(id);
     fetchItems();
   };
 
